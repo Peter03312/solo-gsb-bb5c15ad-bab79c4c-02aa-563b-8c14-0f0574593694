@@ -1,0 +1,31 @@
+services:
+  web:
+    build: .
+    image: redaction-workbench:latest
+    container_name: redaction-workbench
+    ports:
+      - "8000:8000"
+    environment:
+      # 生产使用请务必改成随机长字符串：
+      #   openssl rand -hex 32
+      SESSION_SECRET: "change-me-please"
+      DB_PATH: "/data/redact.db"
+      PORT: "8000"
+      # 初始账号（仅在数据库为空的首次启动时生效）：
+      SEED_AUTHOR_USER: "author"
+      SEED_AUTHOR_PASS: "author123"
+      SEED_REVIEWER1_USER: "reviewer1"
+      SEED_REVIEWER1_PASS: "review123"
+      SEED_REVIEWER2_USER: "reviewer2"
+      SEED_REVIEWER2_PASS: "review123"
+    volumes:
+      - redaction-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz').status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redaction-data:
