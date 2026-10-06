@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DB_PATH: /data/app.db
+      PORT: "8000"
+      # 可选：自定义种子账号（JSON），不设置则使用默认账号
+      # SEED_USERS: '[{"username":"alice","password":"alice123","role":"author"},{"username":"bob","password":"bob123","role":"reviewer"},{"username":"carol","password":"carol123","role":"reviewer"}]'
+    volumes:
+      - workbench-data:/data
+    restart: unless-stopped
+
+volumes:
+  workbench-data:
